@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+  <head>
+ <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- Animate CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" integrity="sha384-OHBBOqpYHNsIqQy8hL1U+8OXf9hH6QRxi0+EODezv82DfnZoV7qoHAZDwMwEJvSw" crossorigin="anonymous">
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="/css/font-awesome.css">
+    <link rel="stylesheet" href="/css/style2.css">
+    <title><%= title %></title>
+  </head>
+  <body>
+    <!-- JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="/utf8/utf8.js"></script>
+
+    <script>
+      var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
+      var selection = null;
+      var theSelected = {};
+      var nextId = 0;
+
+      function make_base_auth(user,password)
+      {
+        var tok = user + ':' + password;
+        var hash = Base64.encode(tok);
+
+        return "xBasic " + hash;
+      }
+
+      function toHex(s)
+      {
+        var hex, i;
+        var res = "";
+        var codeUnit;
+
+        for (i = 0;i < s.length;i++)
+        {
+          hex = s.charCodeAt(i).toString(16);
+          codeUnit = ("000" + hex).slice(-4);
+
+          if(codeUnit.substring(0,2) == "00") res += "\\x" + codeUnit.substring(2,4);
+          else res += "\\u" + codeUnit;
+        }
+        return res;
+      }
+
+      function bytesToSize(bytes)
+      {
+        let sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+
+        if(bytes == 0) return '0 Bytes';
+
+        let i = parseInt(Math.floor(Math.log(bytes)/Math.log(1024)),10);
+        if(i == 0) return `${bytes} ${sizes[i]}`;
+        return `${(bytes / (1024 ** i)).toFixed(1)} ${sizes[i]}`;
+      }
+
+      function callGetPathInfo(path,username,password,callback)
+      {
+        var encoded_path = utf8.encode(path);
+        var req = { path:path };
+
+        $.ajax({
+          url: "https://psylo.esecuresend.com:20001/getPathInfo",
+          type: "POST",
+          data: JSON.stringify(req),
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json',
+          xhrFields: { withCredentials: true },
+          async:true,
+          beforeSend: function(xhr) { xhr.setRequestHeader("Authorization",make_base_auth(username,password)); },
+          success: function(data)
+          {
+            callback(path,data);
+          }
+        });
+      }
+
+      function addDirectoryTableRow(context,table,fileInfo)
+      {
+        var path = fileInfo.path;
+        var components = path.split("/");
+
+        if(components != null && components.length != 0 && components[components.length - 1].charAt(0) == ".") return;
+
+        var directoryIconHTML = '<td class="icon"><span class="fa fa-folder"></span></td>';
+        var fileIconHTML = '<td class="icon"><span class="fa fa-file-o"></span></td>';
+        var fileNameHTML = '<td class="name">' + fileInfo.filename + '</td>';
+        var selector1HTML = '<td class="selector"><button type="button" class="btn btn-primary btn-sm"><span class="fa fa-plus"></span></button></td>';
+        var selector2HTML = '<td class="selector"><button type="button" class="btn btn-warning btn-sm"><span class="fa fa-minus"></span></button></td>';
+        var row = table.insertRow(table.rows.length);
+        var cell0 = row.insertCell(0);
+        var cell1 = row.insertCell(1);
+        var cell2 = row.insertCell(2);
+        var cell3 = row.insertCell(3);
+
+        if(fileInfo.type == "directory")
+        {
+          row.className = "folder";
+          cell0.innerHTML = directoryIconHTML;
+          cell2.innerHTML = '<td class="file-size"></td>'
+        }
+        else
+        {
+          row.className = "file";
+          cell0.innerHTML = fileIconHTML;
+          cell2.innerHTML = `<td class="file-size"> ${bytesToSize(fileInfo.size)}</td>`;
+        }
+        cell0.className = "icon";
+        cell1.innerHTML = fileNameHTML;
+        cell1.className = "name";
+        cell2.className = "file-size";
+        if(theSelected[path] == null) cell3.innerHTML = selector1HTML;
+        else 
+        {
+          let id = getNextId();
+
+          cell3.id = id;
+          theSelected[path].directoryElementSelector = id;
+          cell3.innerHTML = selector2HTML;
+        }
+        cell3.className = "selector";
+        cell3.onclick = function(event) { context.onAddRemove(context,event); }
+        row.onclick = function(event) { context.onChildNav(context,event); }
+        row.onkeydown = function(event) { context.onChildNav(context,event); }
+        row.setAttribute('fileInfo',JSON.stringify(fileInfo));
+      }
+
+      function populateDirectoryTable(context,table,data,startIndex)
+      {
+        var i,index = startIndex;
+
+        if(data && data.info && data.info.children)
+        {
+          for(i = 0;i < data.info.children.length;i++)
+          {
+            var fileInfo = data.info.children[i];
+
+            fileInfo.filename = fileInfo.title;
+            fileInfo.path = fileInfo.path;
+            if(fileInfo.type == "directory") addDirectoryTableRow(context,table,fileInfo);
+          }
+          for(i = 0;i < data.info.children.length;i++)
+          {
+            var fileInfo = data.info.children[i];
+
+            fileInfo.filename = fileInfo.title;
+            fileInfo.path = fileInfo.path;
+            if(fileInfo.type == "regular") addDirectoryTableRow(context,table,fileInfo);
+          }
+        }
+      }
+
+      function handleRowClick(context,event)
+      {
+console.log("x");
+        var row = event.path[1];
+        var fileInfo = JSON.parse(row.getAttribute('fileInfo'));
+        var inputText = document.getElementById('path');
+
+        if(fileInfo.type == "directory")
+        {
+          inputText.value = fileInfo.path;
+          callGetPathInfo(fileInfo.path,'<%= username %>','<%= password %>',function(path,data)
+          {
+            populateDirectory(path,data);
+            selection = fileInfo;
+          });
+        }
+      }
+
+      function getNextId()
+      {
+        return "" + nextId++;
+      }
+
+      function addSelectedListTableRow(context,table,fileInfo)
+      {
+        var directoryIconHTML = '<td class="icon"><span class="fa fa-folder"></span></td>';
+        var fileIconHTML = '<td class="icon"><span class="fa fa-file-o"></span></td>';
+        var fileNameHTML = '<td class="name">' + fileInfo.filename + '</td>';
+        var selectorHTML = '<td class="selector"><button type="button" class="btn btn-warning btn-sm"><span class="fa fa-minus"></span></button></td>';
+        var row = table.insertRow(table.rows.length);
+        var cell0 = row.insertCell(0);
+        var cell1 = row.insertCell(1);
+        var cell2 = row.insertCell(2);
+        var cell3 = row.insertCell(3);
+        var id = getNextId();
+
+        row.id = id;
+        if(fileInfo.type == "directory")
+        {
+          row.className = "folder";
+          cell0.innerHTML = directoryIconHTML;
+          cell2.innerHTML = '<td class="file-size"></td>'
+        }
+        else
+        {
+          row.className = "file";
+          cell0.innerHTML = fileIconHTML;
+          cell2.innerHTML = `<td class="file-size"> ${bytesToSize(fileInfo.size)}</td>`;
+        }
+        cell0.className = "icon";
+        cell1.innerHTML = fileNameHTML;
+        cell1.className = "name";
+        cell2.className = "file-size";
+        cell3.innerHTML = selectorHTML;
+        cell3.className = "selector";
+        cell3.onclick = function(event) { context.onAddRemove(context,event); }
+        row.setAttribute('fileInfo',JSON.stringify(fileInfo));
+        return id;
+      }
+
+      function addToTheSelected(context,el)
+      {
+        var row = el.parentNode;
+        var fileInfo = JSON.parse(row.getAttribute('fileInfo'));
+        var path = fileInfo.path;
+        var selectedList = document.getElementById('selected_list');
+        var id1 = getNextId();
+        var id2 = addSelectedListTableRow(context,selectedList,fileInfo);
+
+        el.id = id1;
+        theSelected[path] = { directoryElementSelector:id1, slistElementSelector:id2, fileInfo:fileInfo };
+      }
+
+      function removeFromTheSelected(context,path)
+      {
+        if(theSelected[path] != null)
+        {
+          var selectedList = document.getElementById('selected_list');
+          var id = theSelected[path].id;
+          var selectorHTML = '<td class="selector"><button type="button" class="btn btn-primary btn-sm"><span class="fa fa-plus"></span></button></td>';
+          var dtElId = theSelected[path].directoryElementSelector;
+          var slElId = theSelected[path].slistElementSelector;
+          var el1 = document.getElementById(dtElId);
+          var el2 = document.getElementById(slElId);
+  
+          if(el1 != null)
+          {
+            var row1 = el1.parentNode;
+
+            row1.cells[3].innerHTML = selectorHTML;
+            row1.cells[3].className = "selector";
+            row1.cells[3].onclick = function(event) { context.onAddRemove(context,event); };
+          }
+          if(el2 != null) el2.parentNode.removeChild(el2);
+        }
+        delete theSelected[path];
+      }
+
+      function handleSelectClick(context,event)
+      {
+        var el = event.path[0];
+
+        while(el.className != "selector") el = el.parentNode;
+        event.stopPropagation();
+   
+        var row = el.parentNode;
+        var fileInfo = JSON.parse(row.getAttribute('fileInfo'));
+        var path = fileInfo.path;
+
+        if(theSelected[path] == null)
+        {
+          addToTheSelected(context,el);
+          el.innerHTML = '<td class="selector"><button type="button" class="btn btn-warning btn-sm"><span class="fa fa-minus"></span></button></td>';
+        }
+        else
+        {
+          removeFromTheSelected(context,path);
+          el.innerHTML = '<td class="selector"><button type="button" class="btn btn-primary btn-sm"><span class="fa fa-plus"></span></button></td>';
+        }
+        el.className = "selector";
+        el.onclick = function(event) { context.onAddRemove(context,event); }
+      }
+
+      function handleHeaderClick(context,event)
+      {
+        var row = event.path[0];
+        var path = row.getAttribute('path');
+        var inputText = document.getElementById('path');
+
+        callGetPathInfo(path,'<%= username %>','<%= password %>',function(path,data)
+        {
+          inputText.value = path;
+          populateDirectory(path,data);
+        });
+      }
+
+      function populateDirectoryHeader(context,header,data,path)
+      {
+        var pathComponents = path.split('/');
+        var lastComponent = pathComponents[pathComponents.length - 1];
+
+        if(pathComponents[0] == "") pathComponents = pathComponents.slice(1);
+
+        if(path == "") lastComponent = "Home Directory";
+        else
+        {
+          if(lastComponent == "" && pathComponents.length >= 2) lastComponent = pathComponents[pathComponents.length - 2];
+          if(lastComponent == "") lastComponent = "Root Directory";
+        }
+        header.textContent = lastComponent;
+        header.onclick = function(event) { context.onParentNav(context,event); };
+        if(pathComponents.length >= 2)
+          header.setAttribute('path','/' + pathComponents.slice(0,pathComponents.length - 1).join('/'));
+        else header.setAttribute('path','/');
+      }
+
+      function populateDirectory(path,data)
+      {
+        var directoryListHeader = document.getElementById('parent_directory_heading');
+        var directoryList = document.getElementById('directory_list');
+        var headerContext = { onParentNav:handleHeaderClick };
+        var dtableContext = { onChildNav:handleRowClick, onAddRemove:handleSelectClick };
+
+        directoryListHeader.innerHTML = "";
+        directoryList.innerHTML = "";
+        populateDirectoryHeader(headerContext,directoryListHeader,data,path);
+        populateDirectoryTable(dtableContext,directoryList,data,0);
+      }
+
+      function init()
+      {
+        var input = document.getElementById('path');
+
+        input.onkeypress = function(e)
+        {
+          if(!e) e = window.event;
+
+          var keyCode = e.keyCode || e.which;
+
+          if(keyCode == '13')
+          {
+            callGetPathInfo(input.value,'<%= username %>','<%= password %>',populateDirectory);
+            return false;
+          }
+        }
+        callGetPathInfo(input.value,'<%= username %>','<%= password %>',populateDirectory);
+      }
+
+      $(document).ready(init);
+
+    </script>
+
+    <div class="wrapper border rounded">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle btn-block" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Location
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#">Macintosh HD</a>
+                <a class="dropdown-item" href="#">Network Drive (with a really long name)</a>
+                <a class="dropdown-item" href="#">Whatever...</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-9">
+            <input class="form-control" id="path" type="text" value="">
+          </div>
+        </div>
+        <div class="row mt-4">
+          <div class="col-sm-8">
+            <div class="row header animated fadeInUp">
+              <div class="col-sm-10">
+                <h4 class="name" id="parent_directory_heading"><span class="fa fa-folder-open"></span></h4>
+              </div>
+              <div class="col-sm-2 selector">
+                <button type="button" class="btn btn-primary btn-sm"><span class="fa fa-plus fa-sm"></span></button>
+              </div>
+            </div>
+            <div class="row file-browser animated zoomIn">
+              <table class="table table-sm table-hover" id="directory_list" tabindex="0">
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <h5>Selected</h5>
+            <div class="border selected-list">
+              <table class="table table-sm" id="selected_list">
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-4">
+          <div class="offset-sm-8 col-sm-4"><button type="button" class="btn btn-block btn-primary">Select</button></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

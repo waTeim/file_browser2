@@ -1,0 +1,23 @@
+{
+  "name": "file_browser",
+  "description": "A file navigator for psylo",
+  "main": "",
+  "authors": [
+    "waTeim <truthset@gmail.com>"
+  ],
+  "license": "MIT",
+  "moduleType": [],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.6",
+    "utf8": "~2.1.1"
+  }
+}
