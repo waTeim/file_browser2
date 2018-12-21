@@ -17,7 +17,8 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "~3.3.6",
+    "bootstrap": "4",
+    "bootstrap-select": "1",
     "utf8": "~2.1.1"
   }
 }

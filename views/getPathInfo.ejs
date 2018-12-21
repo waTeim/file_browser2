@@ -5,12 +5,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
     <!-- Animate CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" integrity="sha384-OHBBOqpYHNsIqQy8hL1U+8OXf9hH6QRxi0+EODezv82DfnZoV7qoHAZDwMwEJvSw" crossorigin="anonymous">
     <!-- Icons CSS -->
     <link rel="stylesheet" href="/css/font-awesome.css">
-    <link rel="stylesheet" href="/css/style2.css">
+    <link rel="stylesheet" href="/css/fontello.css">
+    <link rel="stylesheet" href="/bootstrap-select/dist/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="/css/file_browser_style.css">
     <title><%= title %></title>
   </head>
   <body>
@@ -18,28 +20,41 @@
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="/jquery/dist/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
     <script src="/utf8/utf8.js"></script>
 
     <script>
-      var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
-      var selection = null;
-      var theSelected = {};
-      var nextId = 0;
+      let Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
+      let selection = null;
+      let theSelected = {};
+      let nextId = 0;
+      let total = 0;
+      let homeDir = null;
+
+      let animationEnd = (function(el)
+      {
+        var animations = { animation: 'animationend', OAnimation: 'oAnimationEnd', MozAnimation: 'mozAnimationEnd', WebkitAnimation: 'webkitAnimationEnd', };
+
+        for(let t in animations)
+        {
+          if(el.style[t] !== undefined) return animations[t];
+        }
+      })(document.createElement('div'));
 
       function make_base_auth(user,password)
       {
-        var tok = user + ':' + password;
-        var hash = Base64.encode(tok);
+        let tok = user + ':' + password;
+        let hash = Base64.encode(tok);
 
         return "xBasic " + hash;
       }
 
       function toHex(s)
       {
-        var hex, i;
-        var res = "";
-        var codeUnit;
+        let hex, i;
+        let res = "";
+        let codeUnit;
 
         for (i = 0;i < s.length;i++)
         {
@@ -63,15 +78,16 @@
         return `${(bytes / (1024 ** i)).toFixed(1)} ${sizes[i]}`;
       }
 
-      function callGetPathInfo(path,username,password,callback)
+      function callGetPathInfo(path,options,username,password,callback)
       {
-        var encoded_path = utf8.encode(path);
-        var req = { path:path };
+        let encoded_path = utf8.encode(path);
+        let body = { path:path };
 
+        for(let option in options) body[option] = options[option];
         $.ajax({
           url: "https://psylo.esecuresend.com:20001/getPathInfo",
           type: "POST",
-          data: JSON.stringify(req),
+          data: JSON.stringify(body),
           contentType: 'application/json; charset=utf-8',
           dataType: 'json',
           xhrFields: { withCredentials: true },
@@ -84,65 +100,70 @@
         });
       }
 
+      function getDirectoryListing(path,callback)
+      {
+        callGetPathInfo(path,{},'<%= username %>','<%= password %>',callback);
+      }
+
+      function getDirectorySize(path,callback)
+      {
+        callGetPathInfo(path,{ deep:true, collapseEntries:true, numEntriesLimit:8192 },'<%= username %>','<%= password %>',callback);
+      }
+
       function addDirectoryTableRow(context,table,fileInfo)
       {
-        var path = fileInfo.path;
-        var components = path.split("/");
+        let path = fileInfo.path;
+        let components = path.split("/");
 
         if(components != null && components.length != 0 && components[components.length - 1].charAt(0) == ".") return;
 
-        var directoryIconHTML = '<td class="icon"><span class="fa fa-folder"></span></td>';
-        var fileIconHTML = '<td class="icon"><span class="fa fa-file-o"></span></td>';
-        var fileNameHTML = '<td class="name">' + fileInfo.filename + '</td>';
-        var selector1HTML = '<td class="selector"><button type="button" class="btn btn-primary btn-sm"><span class="fa fa-plus"></span></button></td>';
-        var selector2HTML = '<td class="selector"><button type="button" class="btn btn-warning btn-sm"><span class="fa fa-minus"></span></button></td>';
-        var row = table.insertRow(table.rows.length);
-        var cell0 = row.insertCell(0);
-        var cell1 = row.insertCell(1);
-        var cell2 = row.insertCell(2);
-        var cell3 = row.insertCell(3);
+        let directoryCell0HTML = '<td class="caret"><span class="fa fa-caret-right"></span></td>';
+        let fileNameHTML = '<td class="name">' + fileInfo.filename + '</td>';
+        let selector1HTML = '<td class="selector"><button type="button" class="btn btn-primary btn-sm"><span class="fa fa-plus"></span></button></td>';
+        let selector2HTML = '<td class="selector"><button type="button" class="btn btn-warning btn-sm"><span class="fa fa-minus"></span></button></td>';
+        let row = table.insertRow(table.rows.length);
+        let cell0 = row.insertCell(0);
+        let cell1 = row.insertCell(1);
+        let cell2 = row.insertCell(2);
 
         if(fileInfo.type == "directory")
         {
           row.className = "folder";
-          cell0.innerHTML = directoryIconHTML;
-          cell2.innerHTML = '<td class="file-size"></td>'
+          cell1.innerHTML = '<td class="file-size"></td>'
         }
         else
         {
           row.className = "file";
-          cell0.innerHTML = fileIconHTML;
-          cell2.innerHTML = `<td class="file-size"> ${bytesToSize(fileInfo.size)}</td>`;
+          cell1.innerHTML = `<td class="file-size"> ${bytesToSize(fileInfo.size)}</td>`;
         }
-        cell0.className = "icon";
-        cell1.innerHTML = fileNameHTML;
-        cell1.className = "name";
-        cell2.className = "file-size";
-        if(theSelected[path] == null) cell3.innerHTML = selector1HTML;
+        cell0.innerHTML = fileNameHTML;
+        cell0.className = "name";
+        cell1.className = "file-size";
+        if(theSelected[path] == null) cell2.innerHTML = selector1HTML;
         else 
         {
           let id = getNextId();
 
-          cell3.id = id;
+          cell2.id = id;
           theSelected[path].directoryElementSelector = id;
-          cell3.innerHTML = selector2HTML;
+          cell2.innerHTML = selector2HTML;
         }
-        cell3.className = "selector";
-        cell3.onclick = function(event) { context.onAddRemove(context,event); }
-        row.onclick = function(event) { context.onChildNav(context,event); }
-        row.onkeydown = function(event) { context.onChildNav(context,event); }
+        cell2.className = "selector";
+        cell2.onclick = function(event) { context.onAddRemove(context,cell2,event); }
+        row.onclick = function(event) { context.onChildNav(context,row,event); }
+        row.onkeydown = function(event) { context.onChildNav(context,row,event); }
         row.setAttribute('fileInfo',JSON.stringify(fileInfo));
       }
 
       function populateDirectoryTable(context,table,data,startIndex)
       {
-        var i,index = startIndex;
+        let i,index = startIndex;
 
         if(data && data.info && data.info.children)
         {
           for(i = 0;i < data.info.children.length;i++)
           {
-            var fileInfo = data.info.children[i];
+            let fileInfo = data.info.children[i];
 
             fileInfo.filename = fileInfo.title;
             fileInfo.path = fileInfo.path;
@@ -150,7 +171,7 @@
           }
           for(i = 0;i < data.info.children.length;i++)
           {
-            var fileInfo = data.info.children[i];
+            let fileInfo = data.info.children[i];
 
             fileInfo.filename = fileInfo.title;
             fileInfo.path = fileInfo.path;
@@ -159,18 +180,20 @@
         }
       }
 
-      function handleRowClick(context,event)
+      function handleRowClick(context,target,event)
       {
-console.log("x");
-        var row = event.path[1];
-        var fileInfo = JSON.parse(row.getAttribute('fileInfo'));
-        var inputText = document.getElementById('path');
+        let fileInfo = JSON.parse(target.getAttribute('fileInfo'));
+        let inputText = document.getElementById('path');
 
         if(fileInfo.type == "directory")
         {
           inputText.value = fileInfo.path;
-          callGetPathInfo(fileInfo.path,'<%= username %>','<%= password %>',function(path,data)
+          getDirectoryListing(fileInfo.path,function(path,data)
           {
+            let fileBrowser = document.getElementById('file-browser');
+
+            $('#file-browser').one(animationEnd,function() { $('#file-browser').removeClass("slideInRight"); });
+            fileBrowser.classList.add("slideInRight");
             populateDirectory(path,data);
             selection = fileInfo;
           });
@@ -184,167 +207,194 @@ console.log("x");
 
       function addSelectedListTableRow(context,table,fileInfo)
       {
-        var directoryIconHTML = '<td class="icon"><span class="fa fa-folder"></span></td>';
-        var fileIconHTML = '<td class="icon"><span class="fa fa-file-o"></span></td>';
-        var fileNameHTML = '<td class="name">' + fileInfo.filename + '</td>';
-        var selectorHTML = '<td class="selector"><button type="button" class="btn btn-warning btn-sm"><span class="fa fa-minus"></span></button></td>';
-        var row = table.insertRow(table.rows.length);
-        var cell0 = row.insertCell(0);
-        var cell1 = row.insertCell(1);
-        var cell2 = row.insertCell(2);
-        var cell3 = row.insertCell(3);
-        var id = getNextId();
+        let fileNameHTML = '<td class="name">' + fileInfo.filename + '</td>';
+        let selectorHTML = '<td class="selector"><button type="button" class="btn btn-warning btn-sm"><span class="fa fa-minus"></span></button></td>';
+        let row = table.insertRow(table.rows.length);
+        let cell0 = row.insertCell(0);
+        let cell1 = row.insertCell(1);
+        let cell2 = row.insertCell(2);
+        let id = getNextId();
 
         row.id = id;
-        if(fileInfo.type == "directory")
-        {
-          row.className = "folder";
-          cell0.innerHTML = directoryIconHTML;
-          cell2.innerHTML = '<td class="file-size"></td>'
-        }
-        else
-        {
-          row.className = "file";
-          cell0.innerHTML = fileIconHTML;
-          cell2.innerHTML = `<td class="file-size"> ${bytesToSize(fileInfo.size)}</td>`;
-        }
-        cell0.className = "icon";
-        cell1.innerHTML = fileNameHTML;
-        cell1.className = "name";
-        cell2.className = "file-size";
-        cell3.innerHTML = selectorHTML;
-        cell3.className = "selector";
-        cell3.onclick = function(event) { context.onAddRemove(context,event); }
+        if(fileInfo.type == "directory") row.className = "folder";
+        else row.className = "file";
+        cell0.innerHTML = fileNameHTML;
+        cell0.className = "name";
+        cell1.innerHTML = `<td class="file-size"> ${bytesToSize(fileInfo.size)}</td>`;
+        cell1.className = "file-size";
+        cell2.innerHTML = selectorHTML;
+        cell2.className = "selector";
+        cell2.onclick = function(event) { context.onAddRemove(context,cell2,event); }
         row.setAttribute('fileInfo',JSON.stringify(fileInfo));
         return id;
       }
 
       function addToTheSelected(context,el)
       {
-        var row = el.parentNode;
-        var fileInfo = JSON.parse(row.getAttribute('fileInfo'));
-        var path = fileInfo.path;
-        var selectedList = document.getElementById('selected_list');
-        var id1 = getNextId();
-        var id2 = addSelectedListTableRow(context,selectedList,fileInfo);
+        let row = el.parentNode;
+        let fileInfo = JSON.parse(row.getAttribute('fileInfo'));
+        let path = fileInfo.path;
+        let selectedList = document.getElementById('selected_list');
+        let id1 = getNextId();
 
         el.id = id1;
-        theSelected[path] = { directoryElementSelector:id1, slistElementSelector:id2, fileInfo:fileInfo };
+        if(fileInfo.type == "regular") 
+        {
+          let id2 = addSelectedListTableRow(context,selectedList,fileInfo);
+          let element = document.getElementById("total");
+
+          total += fileInfo.size;
+          element.textContent = bytesToSize(total);
+          theSelected[path] = { directoryElementSelector:id1, slistElementSelector:id2, fileInfo:fileInfo };
+        }
+        else
+        {
+          getDirectorySize(fileInfo.path,function(path,data)
+          {
+            data.info.filename = data.info.title;
+
+            let fileInfo = data.info;
+            let id2 = addSelectedListTableRow(context,selectedList,fileInfo);
+            let element = document.getElementById("total");
+
+            theSelected[path] = { directoryElementSelector:id1, slistElementSelector:id2, fileInfo:fileInfo };
+            total += fileInfo.size;
+            element.textContent = bytesToSize(total);
+          });
+        }
       }
 
       function removeFromTheSelected(context,path)
       {
         if(theSelected[path] != null)
         {
-          var selectedList = document.getElementById('selected_list');
-          var id = theSelected[path].id;
-          var selectorHTML = '<td class="selector"><button type="button" class="btn btn-primary btn-sm"><span class="fa fa-plus"></span></button></td>';
-          var dtElId = theSelected[path].directoryElementSelector;
-          var slElId = theSelected[path].slistElementSelector;
-          var el1 = document.getElementById(dtElId);
-          var el2 = document.getElementById(slElId);
+          let selectedList = document.getElementById('selected_list');
+          let id = theSelected[path].id;
+          let selectorHTML = '<td class="selector"><button type="button" class="btn btn-primary btn-sm"><span class="fa fa-plus"></span></button></td>';
+          let dtElId = theSelected[path].directoryElementSelector;
+          let slElId = theSelected[path].slistElementSelector;
+          let el1 = document.getElementById(dtElId);
+          let el2 = document.getElementById(slElId);
+          let fileInfo = theSelected[path].fileInfo;
+          let element = document.getElementById("total");
+
+          if(fileInfo != null)
+          { 
+            total -= fileInfo.size;
+            element.textContent = bytesToSize(total);
+          }
   
           if(el1 != null)
           {
-            var row1 = el1.parentNode;
+            let row1 = el1.parentNode;
 
-            row1.cells[3].innerHTML = selectorHTML;
-            row1.cells[3].className = "selector";
-            row1.cells[3].onclick = function(event) { context.onAddRemove(context,event); };
+            row1.cells[2].innerHTML = selectorHTML;
+            row1.cells[2].className = "selector";
+            row1.cells[2].onclick = function(event) { context.onAddRemove(context,row1.cells[2],event); };
           }
           if(el2 != null) el2.parentNode.removeChild(el2);
         }
         delete theSelected[path];
       }
 
-      function handleSelectClick(context,event)
+      function handleSelectClick(context,target,event)
       {
-        var el = event.path[0];
-
-        while(el.className != "selector") el = el.parentNode;
         event.stopPropagation();
    
-        var row = el.parentNode;
-        var fileInfo = JSON.parse(row.getAttribute('fileInfo'));
-        var path = fileInfo.path;
+        let row = target.parentNode;
+        let fileInfo = JSON.parse(row.getAttribute('fileInfo'));
+        let path = fileInfo.path;
 
         if(theSelected[path] == null)
         {
-          addToTheSelected(context,el);
-          el.innerHTML = '<td class="selector"><button type="button" class="btn btn-warning btn-sm"><span class="fa fa-minus"></span></button></td>';
+          addToTheSelected(context,target);
+          target.innerHTML = '<td class="selector"><button type="button" class="btn btn-warning btn-sm"><span class="fa fa-minus"></span></button></td>';
         }
         else
         {
           removeFromTheSelected(context,path);
-          el.innerHTML = '<td class="selector"><button type="button" class="btn btn-primary btn-sm"><span class="fa fa-plus"></span></button></td>';
+          target.innerHTML = '<td class="selector"><button type="button" class="btn btn-primary btn-sm"><span class="fa fa-plus"></span></button></td>';
         }
-        el.className = "selector";
-        el.onclick = function(event) { context.onAddRemove(context,event); }
+        target.className = "selector";
+        target.onclick = function(event) { context.onAddRemove(context,target,event); }
       }
 
-      function handleHeaderClick(context,event)
+      function handleHeaderClick(context,target,event)
       {
-        var row = event.path[0];
-        var path = row.getAttribute('path');
-        var inputText = document.getElementById('path');
+        let path = target.getAttribute('path');
+        let inputText = document.getElementById('path');
 
-        callGetPathInfo(path,'<%= username %>','<%= password %>',function(path,data)
+        getDirectoryListing(path,function(path,data)
         {
+          let fileBrowser = document.getElementById('file-browser');
+
           inputText.value = path;
+          $('#file-browser').one(animationEnd,function() { $('#file-browser').removeClass("slideInLeft"); });
+          fileBrowser.classList.add("slideInLeft");
           populateDirectory(path,data);
         });
       }
 
       function populateDirectoryHeader(context,header,data,path)
       {
-        var pathComponents = path.split('/');
-        var lastComponent = pathComponents[pathComponents.length - 1];
+        let pathComponents = path.split('/');
+        let lastComponent = pathComponents[pathComponents.length - 1];
+        let selectorHTML1 = '<td class="selector"><button type="button" class="btn btn-warning btn-sm"><span class="fa fa-minus"></span></button></td>';
+        let selectorHTML2 = '<td class="selector"><button type="button" class="btn btn-primary btn-sm"><span class="fa fa-plus"></span></button></td>';
+
 
         if(pathComponents[0] == "") pathComponents = pathComponents.slice(1);
-
-        if(path == "") lastComponent = "Home Directory";
+        data.info.filename = data.info.title;
+        if(path == "" && homeDir == null) homeDir = data.info.key;
+        if(path == "" || homeDir == path) lastComponent = "Home Directory";
         else
         {
           if(lastComponent == "" && pathComponents.length >= 2) lastComponent = pathComponents[pathComponents.length - 2];
           if(lastComponent == "") lastComponent = "Root Directory";
         }
-        header.textContent = lastComponent;
-        header.onclick = function(event) { context.onParentNav(context,event); };
+        header.cells[0].textContent = lastComponent;
+        header.onclick = function(event) { context.onParentNav(context,header,event); };
+        if(theSelected[path] != null || (homeDir != null && theSelected[homeDir] != null)) header.cells[2].innerHTML = selectorHTML1;
+        else header.cells[2].innerHTML = selectorHTML2;
+        header.cells[2].onclick = function(event) { context.onAddRemove(context,header.cells[2],event); };
         if(pathComponents.length >= 2)
           header.setAttribute('path','/' + pathComponents.slice(0,pathComponents.length - 1).join('/'));
-        else header.setAttribute('path','/');
+        else 
+          header.setAttribute('path','/');
+        header.setAttribute('fileInfo',JSON.stringify(data.info));
       }
 
       function populateDirectory(path,data)
       {
-        var directoryListHeader = document.getElementById('parent_directory_heading');
-        var directoryList = document.getElementById('directory_list');
-        var headerContext = { onParentNav:handleHeaderClick };
-        var dtableContext = { onChildNav:handleRowClick, onAddRemove:handleSelectClick };
+        let directoryHeader = document.getElementById('directory_name');
+        let directoryList = document.getElementById('directory_contents');
+        let headerContext = { onParentNav:handleHeaderClick, onAddRemove:handleSelectClick };
+        let dtableContext = { onChildNav:handleRowClick, onAddRemove:handleSelectClick };
 
-        directoryListHeader.innerHTML = "";
         directoryList.innerHTML = "";
-        populateDirectoryHeader(headerContext,directoryListHeader,data,path);
+        populateDirectoryHeader(headerContext,directoryHeader,data,path);
         populateDirectoryTable(dtableContext,directoryList,data,0);
       }
 
       function init()
       {
-        var input = document.getElementById('path');
+        let input = document.getElementById('path');
+        let element = document.getElementById("total");
 
+        element.textContent = bytesToSize(total);
         input.onkeypress = function(e)
         {
           if(!e) e = window.event;
 
-          var keyCode = e.keyCode || e.which;
+          let keyCode = e.keyCode || e.which;
 
           if(keyCode == '13')
           {
-            callGetPathInfo(input.value,'<%= username %>','<%= password %>',populateDirectory);
+            getDirectoryListing(input.value,populateDirectory);
             return false;
           }
         }
-        callGetPathInfo(input.value,'<%= username %>','<%= password %>',populateDirectory);
+        getDirectoryListing(input.value,populateDirectory);
       }
 
       $(document).ready(init);
@@ -355,33 +405,39 @@ console.log("x");
       <div class="container">
         <div class="row">
           <div class="col-sm-3">
-            <div class="dropdown">
-              <button class="btn btn-secondary dropdown-toggle btn-block" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Location
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="#">Macintosh HD</a>
-                <a class="dropdown-item" href="#">Network Drive (with a really long name)</a>
-                <a class="dropdown-item" href="#">Whatever...</a>
-              </div>
-            </div>
+             <select class="selectpicker animated bounce">
+               <option data-icon="icon-cloud" selected>Filing Cabinet</option>
+               <option data-icon="fa fa-cube">Location</option>
+               <option data-icon="fa fa-cube">Ipsum</option>
+               <option data-icon="fa fa-cube">Lorem</option>
+             </select>
           </div>
-          <div class="col-sm-9">
+          <div class="col-sm-8 full-path">
             <input class="form-control" id="path" type="text" value="">
           </div>
+          <div class="col-sm-1 hidden-files-toggle">
+            <button type="button" class="btn btn-outline-secondary" data-toggle="tooltip" data-placement="top" title="Show hidden files?"><span class="fa fa-eye-slash"></span></button>
+            <!-- or 
+            <button type="button" class="btn btn-outline-secondary" data-toggle="tooltip" data-placement="top" title="Hide hidden files?"><span class="fa fa-eye"></span></button>
+            -->
+          </div>
         </div>
-        <div class="row mt-4">
+        <div class="row mt-4 overflow-hidden">
           <div class="col-sm-8">
             <div class="row header animated fadeInUp">
-              <div class="col-sm-10">
-                <h4 class="name" id="parent_directory_heading"><span class="fa fa-folder-open"></span></h4>
-              </div>
-              <div class="col-sm-2 selector">
-                <button type="button" class="btn btn-primary btn-sm"><span class="fa fa-plus fa-sm"></span></button>
-              </div>
+              <table class="table table-sm table-hover">
+                <tbody>
+                  <tr class="folder" id="directory_name">
+                    <td class="name">/td>
+                    <td class="file-size"></td>
+                    <td class="selector"><button type="button" class="btn btn-primary btn-sm"><span class="fa fa-plus"></span></button></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-            <div class="row file-browser animated zoomIn">
-              <table class="table table-sm table-hover" id="directory_list" tabindex="0">
+
+            <div id="file-browser" class="row animated file-browser">
+              <table class="table table-sm table-hover" id="directory_contents">
                 <tbody>
                 </tbody>
               </table>
@@ -389,16 +445,22 @@ console.log("x");
           </div>
           <div class="col-sm-4">
             <h5>Selected</h5>
-            <div class="border selected-list">
+            <div class="selected-list">
               <table class="table table-sm" id="selected_list">
                 <tbody>
                 </tbody>
               </table>
             </div>
+            <div class="total">Total: <span id="total"></span></div>
           </div>
         </div>
         <div class="row mt-4">
-          <div class="offset-sm-8 col-sm-4"><button type="button" class="btn btn-block btn-primary">Select</button></div>
+          <div class="col-sm-8">
+            <form class="form-inline search">
+              <div class="form-group"><input type="text" class="form-control" placeholder="Search..."><button type="submit" class="btn btn-default"><span class="fa fa-search"></span></button></div>
+            </form>
+          </div>
+          <div class="col-sm-4"><button type="button" class="btn btn-block btn-primary">Ok Go!</button></div>
         </div>
       </div>
     </div>
