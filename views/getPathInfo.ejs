@@ -31,6 +31,7 @@
       let nextId = 0;
       let total = 0;
       let homeDir = null;
+      let showHidden = false;
 
       let animationEnd = (function(el)
       {
@@ -112,11 +113,11 @@
 
       function addDirectoryTableRow(context,table,fileInfo)
       {
+        let displayStyle = "";
+
+        if(fileInfo.isHidden && !showHidden) displayStyle = "none";
+
         let path = fileInfo.path;
-        let components = path.split("/");
-
-        if(components != null && components.length != 0 && components[components.length - 1].charAt(0) == ".") return;
-
         let directoryCell0HTML = '<td class="caret"><span class="fa fa-caret-right"></span></td>';
         let fileNameHTML = '<td class="name">' + fileInfo.filename + '</td>';
         let selector1HTML = '<td class="selector"><button type="button" class="btn btn-primary btn-sm"><span class="fa fa-plus"></span></button></td>';
@@ -126,6 +127,7 @@
         let cell1 = row.insertCell(1);
         let cell2 = row.insertCell(2);
 
+        row.style.display = displayStyle;
         if(fileInfo.type == "directory")
         {
           row.className = "folder";
@@ -161,6 +163,14 @@
 
         if(data && data.info && data.info.children)
         {
+          data.info.children.sort(function(a,b)
+          { 
+            let x = a.title.toLowerCase();
+            let y = b.title.toLowerCase();
+            
+            return x<y?-1:x>y?1:0;
+          });
+
           for(i = 0;i < data.info.children.length;i++)
           {
             let fileInfo = data.info.children[i];
@@ -364,6 +374,21 @@
         header.setAttribute('fileInfo',JSON.stringify(data.info));
       }
 
+      function filterDirectoryList()
+      {
+        let directoryList = document.getElementById('directory_contents');
+        let s = document.getElementById('filter_text').value;
+        let pattern = new RegExp(s,"i")
+
+        for(let i = 0;i < directoryList.rows.length;i++)
+        {
+          let fileInfo = JSON.parse(directoryList.rows[i].getAttribute('fileInfo'));
+
+          if(fileInfo.title.match(pattern) && (fileInfo.isHidden && showHidden || !fileInfo.isHidden)) directoryList.rows[i].style.display = "";
+          else directoryList.rows[i].style.display = "none";
+        }
+      }
+
       function populateDirectory(path,data)
       {
         let directoryHeader = document.getElementById('directory_name');
@@ -374,14 +399,39 @@
         directoryList.innerHTML = "";
         populateDirectoryHeader(headerContext,directoryHeader,data,path);
         populateDirectoryTable(dtableContext,directoryList,data,0);
+        filterDirectoryList();
       }
+
+      function toggleHidden()
+      {
+        let toggle = document.getElementById('vis_toggle');
+        let showHTML = '<button type="button" class="btn btn-outline-secondary" data-toggle="tooltip" data-placement="top" title="Show hidden files?"><span class="fa fa-eye-slash"></span></button>';
+        let hideHTML = '<button type="button" class="btn btn-outline-secondary" data-toggle="tooltip" data-placement="top" title="Hide hidden files?"><span class="fa fa-eye"></span></button>';
+
+        if(showHidden)
+        {
+          showHidden = false;
+          toggle.innerHTML = showHTML;
+        }
+        else 
+        {
+          showHidden = true;
+          toggle.innerHTML = hideHTML;
+        }
+
+        filterDirectoryList();
+      }
+
 
       function init()
       {
         let input = document.getElementById('path');
         let element = document.getElementById("total");
+        let visToggle = document.getElementById('vis_toggle');
+        let filterText = document.getElementById('filter_text');
 
         element.textContent = bytesToSize(total);
+        visToggle.onclick = toggleHidden;
         input.onkeypress = function(e)
         {
           if(!e) e = window.event;
@@ -394,6 +444,15 @@
             return false;
           }
         }
+
+        filterText.addEventListener("keyup",function(event)
+        {
+           event.preventDefault();
+           //if(event.keyCode === 13) document.getElementById('do_filter').click();
+           //else filterDirectoryList();
+           filterDirectoryList();
+        });
+
         getDirectoryListing(input.value,populateDirectory);
       }
 
@@ -415,11 +474,8 @@
           <div class="col-sm-8 full-path">
             <input class="form-control" id="path" type="text" value="">
           </div>
-          <div class="col-sm-1 hidden-files-toggle">
+          <div class="col-sm-1 hidden-files-toggle" id="vis_toggle">
             <button type="button" class="btn btn-outline-secondary" data-toggle="tooltip" data-placement="top" title="Show hidden files?"><span class="fa fa-eye-slash"></span></button>
-            <!-- or 
-            <button type="button" class="btn btn-outline-secondary" data-toggle="tooltip" data-placement="top" title="Hide hidden files?"><span class="fa fa-eye"></span></button>
-            -->
           </div>
         </div>
         <div class="row mt-4 overflow-hidden">
@@ -456,9 +512,9 @@
         </div>
         <div class="row mt-4">
           <div class="col-sm-8">
-            <form class="form-inline search">
-              <div class="form-group"><input type="text" class="form-control" placeholder="Search..."><button type="submit" class="btn btn-default"><span class="fa fa-search"></span></button></div>
-            </form>
+            <div class="form-group">
+              <input id="filter_text" class="form-control" type="text" placeholder="Filter...">
+            </div>
           </div>
           <div class="col-sm-4"><button type="button" class="btn btn-block btn-primary">Ok Go!</button></div>
         </div>
